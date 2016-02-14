@@ -22,7 +22,7 @@
 			sample_rate = s_rate;
 			for (buffer_size = 4096; buffer_size < mbs;
 			     buffer_size *= 2);
-			buffer = malloc(buffer_size * sizeof(LADSPA_Data));
+			buffer = (LADSPA_Data*)malloc(buffer_size * sizeof(LADSPA_Data));
 			buffer_mask = buffer_size - 1;
 			phase = 0;
 			last_phase = 0;

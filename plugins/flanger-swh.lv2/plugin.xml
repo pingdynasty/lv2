@@ -29,7 +29,7 @@ next_law_pos = 10;
 
 min_size = sample_rate * 0.04f;
 for (delay_size = 1024; delay_size < min_size; delay_size *= 2);
-delay_tbl = malloc(sizeof(LADSPA_Data) * delay_size);
+delay_tbl = (LADSPA_Data*)malloc(sizeof(LADSPA_Data) * delay_size);
 delay_pos = 0;
 count = 0;
 old_d_base = 0;
