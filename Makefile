@@ -121,9 +121,15 @@ dist: real-clean all dist-clean
 	xsltproc -novalid xslt/owl.xsl $*.xml > $@
 
 owl: $(PATCHES)
+	cp include/ladspa-util.h owl/
 	cp plugins/tape_delay-swh.lv2/plugin.hpp owl/TapeDelayPatch.hpp
 	cp plugins/decimator-swh.lv2/plugin.hpp owl/DecimatorPatch.hpp
 	cp plugins/multivoice_chorus-swh.lv2/plugin.hpp owl/MultivoiceChorusPatch.hpp
 	cp plugins/giant_flange-swh.lv2/plugin.hpp owl/GiantFlangePatch.hpp
+	cp util/waveguide_nl.h owl/util/
+	cp plugins/plate-swh.lv2/plugin.hpp owl/PlateReverbPatch.hpp
+	cp plugins/satan_maximiser-swh.lv2/plugin.hpp owl/SatanMaximiserPatch.hpp
+	cp plugins/bode_shifter-swh.lv2/plugin.hpp owl/BodeShifterPatch.hpp
+	cp plugins/retro_flange-swh.lv2/plugin.hpp owl/RetroFlangePatch.hpp
 
 .PRECIOUS: %.c %.ttl
