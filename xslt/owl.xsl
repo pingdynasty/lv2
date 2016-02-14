@@ -28,10 +28,12 @@ inline int isnan(float x){
 */
 class <xsl:value-of select="$PluginLabel"/>Patch : public Patch {
 private:
-<xsl:apply-templates select="port" mode="declare"/>
-<xsl:apply-templates select="instance-data" mode="declare"/>
+<xsl:apply-templates mode="declare"/>
+<!-- <xsl:apply-templates select="port" mode="declare"/> -->
+<!-- <xsl:apply-templates select="instance-data" mode="declare"/> -->
 public:
   <xsl:value-of select="$PluginLabel"/>Patch(){
+<xsl:apply-templates mode="register"/>
     float s_rate = getSampleRate();
 <xsl:apply-templates select="callback[@event='instantiate']"/>
   }
@@ -39,9 +41,8 @@ public:
   void processAudio(AudioBuffer&amp; _buf){
     uint32_t sample_count = _buf.getSize();
     float s_rate = getSampleRate();
-    input = _buf.getSamples(LEFT_CHANNEL);
-    output = input;
-    <xsl:value-of select="$PluginLabel"/>Patch* plugin_data = this;    
+<xsl:apply-templates select="port" mode="assign"/>
+<xsl:value-of select="$PluginLabel"/>Patch* plugin_data = this;    
 <xsl:apply-templates select="callback[@event='run']"/>
   }
 };
@@ -62,6 +63,31 @@ public:
 <xsl:template match="instance-data" mode="declare">
   <xsl:value-of select="concat('  ', @type, ' ', @label)"/>;
 </xsl:template>
+
+<xsl:template match="port[@type='control'][position() &lt; 6]" mode="register">
+  <xsl:text>  registerParameter(PARAMETER_</xsl:text>
+  <xsl:value-of select="translate(count(preceding::port[@type='control'])+1, '12345', 'ABCDE')"/>
+  <xsl:text>, "</xsl:text>
+  <xsl:value-of select="name"/>
+  <xsl:text>");
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="port[@type='control']" mode="assign">
+  <xsl:value-of select="concat('  ', @label, ' = getParameterValue(PARAMETER_')"/>
+  <xsl:value-of select="translate(position(), '12345', 'ABCDE')"/>);
+</xsl:template>
+
+<xsl:template match="port[@type='control'][position()>5]" mode="assign"/>
+
+<xsl:template match="port[@type='audio']" mode="assign">
+  <xsl:value-of select="concat('  ', @label, ' = _buf.getSamples(')"/>
+  <xsl:value-of select="count(preceding::port[@type='audio'][@dir=current()/@dir])"/>);
+</xsl:template>
+
+<xsl:template match="text()|*" mode="declare"/>
+<xsl:template match="text()|*" mode="register"/>
+<xsl:template match="text()|*" mode="assign"/>
 
 <xsl:template match="p">
 <xsl:value-of select="."/>
