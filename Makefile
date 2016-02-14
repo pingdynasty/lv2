@@ -117,8 +117,13 @@ dist: real-clean all dist-clean
 	rm -rf swh-lv2-$(VERSION)
 	mv ../swh-lv2-$(VERSION).tar.gz .
 
-owl: $(PATCHES)
 %.hpp: %.xml xslt/owl.xsl
 	xsltproc -novalid xslt/owl.xsl $*.xml > $@
+
+owl: $(PATCHES)
+	cp plugins/tape_delay-swh.lv2/plugin.hpp owl/TapeDelayPatch.hpp
+	cp plugins/decimator-swh.lv2/plugin.hpp owl/DecimatorPatch.hpp
+	cp plugins/multivoice_chorus-swh.lv2/plugin.hpp owl/MultivoiceChorusPatch.hpp
+	cp plugins/giant_flange-swh.lv2/plugin.hpp owl/GiantFlangePatch.hpp
 
 .PRECIOUS: %.c %.ttl
