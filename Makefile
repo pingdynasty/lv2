@@ -55,6 +55,7 @@ endif
 include extra.mk
 
 OBJECTS = $(shell echo $(BUILD_PLUGINS) | sed 's/\([^ ]*\.lv2\)/plugins\/\1\/plugin.$(EXT)/g')
+PATCHES = $(shell echo $(BUILD_PLUGINS) | sed 's/\([^ ]*\.lv2\)/plugins\/\1\/plugin.hpp/g')
 
 all: util gverb $(OBJECTS)
 
@@ -87,7 +88,7 @@ util: util/blo.o util/iir.o util/db.o util/rms.o util/pitchscale.o
 clean: dist-clean
 
 dist-clean:
-	rm -f plugins/*/*.{$(EXT),o} plugins/*/*.o plugins/*/manifest.ttl util/*.o gverb/*.o
+	rm -f plugins/*/*.{$(EXT),o} plugins/*/*.o plugins/*/manifest.ttl plugins/*/*.hpp util/*.o gverb/*.o
 
 real-clean:
 	rm -f plugins/*/*.{c,ttl,$(EXT),o,in} util/*.o gverb/*.o
@@ -115,5 +116,9 @@ dist: real-clean all dist-clean
 	tar cfz swh-lv2-$(VERSION).tar.gz swh-lv2-$(VERSION)/{Makefile,README,*.mk,plugins/*/*,util/*,gverb/*,xslt/*,include/*} && \
 	rm -rf swh-lv2-$(VERSION)
 	mv ../swh-lv2-$(VERSION).tar.gz .
+
+owl: $(PATCHES)
+%.hpp: %.xml xslt/owl.xsl
+	xsltproc -novalid xslt/owl.xsl $*.xml > $@
 
 .PRECIOUS: %.c %.ttl
