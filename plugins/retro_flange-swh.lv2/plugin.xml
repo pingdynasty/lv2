@@ -31,14 +31,14 @@ inline LADSPA_Data sat(LADSPA_Data x, float q,  float dist) {
 		<callback event="instantiate"><![CDATA[
 sample_rate = s_rate;
 buffer_size = BASE_BUFFER * s_rate;
-buffer = calloc(buffer_size, sizeof(LADSPA_Data));
+buffer = (LADSPA_Data*)calloc(buffer_size, sizeof(LADSPA_Data));
 phase = 0;
 last_phase = 0;
 last_in = 0.0f;
 max_law_p = s_rate*2;
 last_law_p = -1;
 delay_line_length = sample_rate * 0.01f;
-delay_line = calloc(sizeof(float), delay_line_length);
+delay_line = (float*)calloc(sizeof(float), delay_line_length);
 
 delay_pos = 0;
 count = 0;
