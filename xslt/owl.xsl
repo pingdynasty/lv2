@@ -80,7 +80,7 @@ public:
 
 <xsl:template match="range" mode="assign">
   <xsl:text>*</xsl:text>
-  <xsl:value-of select="@max - @min"/> - <xsl:value-of select="@min"/>
+  <xsl:value-of select="translate(@max, '+', '') - translate(@min, '+', '')"/> - <xsl:value-of select="translate(@min, '+', '')"/>
 </xsl:template>
 
 <xsl:template match="port[@type='audio']" mode="assign">
