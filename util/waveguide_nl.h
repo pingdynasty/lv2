@@ -18,11 +18,11 @@ typedef struct {
 
 waveguide_nl *waveguide_nl_new(int size, float fc, float da, float db)
 {
-	waveguide_nl *wg = malloc(sizeof(waveguide_nl));
+        waveguide_nl *wg = (waveguide_nl *)malloc(sizeof(waveguide_nl));
 	wg->size = size;
 	wg->delay = size;
-	wg->buffer[0] = calloc(size, sizeof(float));
-	wg->buffer[1] = calloc(size, sizeof(float));
+	wg->buffer[0] = (float*)calloc(size, sizeof(float));
+	wg->buffer[1] = (float*)calloc(size, sizeof(float));
 	wg->ptr = 0;
 	wg->fc = fc;
 	wg->lp[0] = 0.0f;

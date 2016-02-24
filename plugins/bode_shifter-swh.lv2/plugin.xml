@@ -59,8 +59,8 @@ static float xcoeffs[] = {
 
       fs = (float)s_rate;
 
-      delay = calloc(D_SIZE, sizeof(LADSPA_Data));
-      sint  = calloc(SIN_T_SIZE + 4, sizeof(float));
+      delay = (LADSPA_Data*)calloc(D_SIZE, sizeof(LADSPA_Data));
+      sint  = (float*)calloc(SIN_T_SIZE + 4, sizeof(float));
 
       dptr = 0;
       phi = 0.0f;

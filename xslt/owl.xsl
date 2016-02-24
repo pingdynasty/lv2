@@ -5,21 +5,20 @@
 <xsl:variable name="ucase">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
 
 <xsl:template match="/">
-  <xsl:value-of select="/ladspa/global/code"/>
-  <xsl:apply-templates select="ladspa/plugin"/>
-</xsl:template>
-
-<xsl:template match="plugin">
-
-<xsl:variable name="pluginLabel"><xsl:value-of select="@label"/></xsl:variable>
-<xsl:variable name="PluginLabel"><xsl:call-template name="initialCaps"><xsl:with-param name="in" select="$pluginLabel" /></xsl:call-template></xsl:variable>
-<xsl:variable name="PLUGINLABEL"><xsl:call-template name="allCaps"><xsl:with-param name="in" select="$pluginLabel" /></xsl:call-template></xsl:variable>
 #include "StompBox.h"
 
 typedef float LADSPA_Data;
 inline int isnan(float x){
   return std::isnan(x);
 }
+  <xsl:value-of select="/ladspa/global/code"/>
+  <xsl:apply-templates select="ladspa/plugin"/>
+</xsl:template>
+
+<xsl:template match="plugin">
+<xsl:variable name="pluginLabel"><xsl:value-of select="@label"/></xsl:variable>
+<xsl:variable name="PluginLabel"><xsl:call-template name="initialCaps"><xsl:with-param name="in" select="$pluginLabel" /></xsl:call-template></xsl:variable>
+<xsl:variable name="PLUGINLABEL"><xsl:call-template name="allCaps"><xsl:with-param name="in" select="$pluginLabel" /></xsl:call-template></xsl:variable>
 
 /**
   <xsl:value-of select="$PluginLabel"/>
@@ -29,8 +28,6 @@ inline int isnan(float x){
 class <xsl:value-of select="$PluginLabel"/>Patch : public Patch {
 private:
 <xsl:apply-templates mode="declare"/>
-<!-- <xsl:apply-templates select="port" mode="declare"/> -->
-<!-- <xsl:apply-templates select="instance-data" mode="declare"/> -->
 public:
   <xsl:value-of select="$PluginLabel"/>Patch(){
 <xsl:apply-templates mode="register"/>
@@ -53,7 +50,8 @@ public:
 </xsl:template>
 
 <xsl:template match="port[@type='control']" mode="declare">
-  <xsl:value-of select="concat('  float ', @label)"/>;
+  float <xsl:if test="@dir='output'">*</xsl:if>
+  <xsl:value-of select="@label"/>;
 </xsl:template>
 
 <xsl:template match="port[@type='audio']" mode="declare">
@@ -64,7 +62,7 @@ public:
   <xsl:value-of select="concat('  ', @type, ' ', @label)"/>;
 </xsl:template>
 
-<xsl:template match="port[@type='control'][position() &lt; 6]" mode="register">
+<xsl:template match="port[@type='control'][@dir='input'][position() &lt; 6]" mode="register">
   <xsl:text>  registerParameter(PARAMETER_</xsl:text>
   <xsl:value-of select="translate(count(preceding::port[@type='control'])+1, '12345', 'ABCDE')"/>
   <xsl:text>, "</xsl:text>
@@ -73,12 +71,17 @@ public:
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="port[@type='control']" mode="assign">
+<xsl:template match="port[@type='control'][@dir='input'][position() &lt; 6]" mode="assign">
   <xsl:value-of select="concat('  ', @label, ' = getParameterValue(PARAMETER_')"/>
-  <xsl:value-of select="translate(position(), '12345', 'ABCDE')"/>);
+  <xsl:value-of select="translate(position(), '12345', 'ABCDE')"/>
+  <xsl:text>)</xsl:text>
+  <xsl:apply-templates select="range" mode="assign"/>;
 </xsl:template>
 
-<xsl:template match="port[@type='control'][position()>5]" mode="assign"/>
+<xsl:template match="range" mode="assign">
+  <xsl:text>*</xsl:text>
+  <xsl:value-of select="@max - @min"/> - <xsl:value-of select="@min"/>
+</xsl:template>
 
 <xsl:template match="port[@type='audio']" mode="assign">
   <xsl:value-of select="concat('  ', @label, ' = _buf.getSamples(')"/>

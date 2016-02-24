@@ -16,7 +16,7 @@
     ]]></code>
   </global>
 
-  <plugin label="satanMaximiser" id="1408" class="DynamicsPlugin,DistortionPlugin">
+  <plugin label="SatanMaximiser" id="1408" class="DynamicsPlugin,DistortionPlugin">
     <name>Barry's Satan Maximiser</name>
     <p>Formerly Stupid Compressor. Thanks to Matt Yee-King for the name.</p>
     <p>Compresses signals with a stupidly short attack and decay, infinite
@@ -25,7 +25,7 @@ distortion.</p>
 
     <callback event="instantiate"><![CDATA[
       env = 0.0f;
-      buffer = malloc(sizeof(LADSPA_Data) * BUFFER_SIZE);
+      buffer = (LADSPA_Data*)malloc(sizeof(LADSPA_Data) * BUFFER_SIZE);
       buffer_pos = 0;
     ]]></callback>
 
