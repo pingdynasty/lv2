@@ -1,4 +1,11 @@
 
+#include "StompBox.h"
+
+typedef float LADSPA_Data;
+inline int isnan(float x){
+  return std::isnan(x);
+}
+  
       #include <sys/types.h>
       #include "ladspa-util.h"
 
@@ -11,12 +18,6 @@
       #define CLIP_A ((MAX_AMP - CLIP) * (MAX_AMP - CLIP))
       #define CLIP_B (MAX_AMP - 2.0f * CLIP)
     
-#include "StompBox.h"
-
-typedef float LADSPA_Data;
-inline int isnan(float x){
-  return std::isnan(x);
-}
 
 /**
   GiantFlange
@@ -31,12 +32,19 @@ but beware of it.
 */
 class GiantFlangePatch : public Patch {
 private:
+
   float deldouble;
+
   float freq1;
+
   float delay1;
+
   float freq2;
+
   float delay2;
+
   float feedback;
+
   float wet;
   float* input;
   float* output;
@@ -79,10 +87,10 @@ public:
     uint32_t sample_count = _buf.getSize();
     float s_rate = getSampleRate();
   deldouble = getParameterValue(PARAMETER_A);
-  freq1 = getParameterValue(PARAMETER_B);
-  delay1 = getParameterValue(PARAMETER_C);
-  freq2 = getParameterValue(PARAMETER_D);
-  delay2 = getParameterValue(PARAMETER_E);
+  freq1 = getParameterValue(PARAMETER_B)*30 - 0;
+  delay1 = getParameterValue(PARAMETER_C)*10.5 - 0;
+  freq2 = getParameterValue(PARAMETER_D)*30 - 0;
+  delay2 = getParameterValue(PARAMETER_E)*10.5 - 0;
   input = _buf.getSamples(0);
   output = _buf.getSamples(0);
 GiantFlangePatch* plugin_data = this;    

@@ -1,13 +1,14 @@
 
-      #include <math.h>
-      #include "ladspa-util.h"
-    
 #include "StompBox.h"
 
 typedef float LADSPA_Data;
 inline int isnan(float x){
   return std::isnan(x);
 }
+  
+      #include <math.h>
+      #include "ladspa-util.h"
+    
 
 /**
   Decimator
@@ -18,7 +19,9 @@ Decimates (reduces the effective sample rate), and reduces the bit depth of the 
 */
 class DecimatorPatch : public Patch {
 private:
+
   float bits;
+
   float fs;
   float* input;
   float* output;
@@ -28,6 +31,9 @@ private:
 
 public:
   DecimatorPatch(){
+  registerParameter(PARAMETER_A, "Bit depth");
+  registerParameter(PARAMETER_B, "Sample rate (Hz)");
+
     float s_rate = getSampleRate();
 
 sample_rate = s_rate;
@@ -39,9 +45,11 @@ last_out = 0.0f;
   void processAudio(AudioBuffer& _buf){
     uint32_t sample_count = _buf.getSize();
     float s_rate = getSampleRate();
-    input = _buf.getSamples(LEFT_CHANNEL);
-    output = input;
-    DecimatorPatch* plugin_data = this;    
+  bits = getParameterValue(PARAMETER_A)*23 - 1;
+  fs = getParameterValue(PARAMETER_B)*0.999 - 0.001;
+  input = _buf.getSamples(0);
+  output = _buf.getSamples(0);
+DecimatorPatch* plugin_data = this;    
 
 unsigned long pos;
 float step, stepr, delta, ratio;

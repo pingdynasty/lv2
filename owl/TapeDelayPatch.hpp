@@ -1,14 +1,15 @@
 
-#include "ladspa-util.h"
-
-#define BASE_BUFFER 8 // Tape length (inches)
-		
 #include "StompBox.h"
 
 typedef float LADSPA_Data;
 inline int isnan(float x){
   return std::isnan(x);
 }
+  
+#include "ladspa-util.h"
+
+#define BASE_BUFFER 8 // Tape length (inches)
+		
 
 /**
   TapeDelay
@@ -19,15 +20,25 @@ Correctly models the tape motion and some of the smear effect, there is no simul
 */
 class TapeDelayPatch : public Patch {
 private:
+
   float speed;
+
   float da_db;
+
   float t1d;
+
   float t1a_db;
+
   float t2d;
+
   float t2a_db;
+
   float t3d;
+
   float t3a_db;
+
   float t4d;
+
   float t4a_db;
   float* input;
   float* output;
@@ -46,6 +57,12 @@ private:
 
 public:
   TapeDelayPatch(){
+  registerParameter(PARAMETER_A, "Tape speed (inches/sec, 1=normal)");
+  registerParameter(PARAMETER_B, "Dry level (dB)");
+  registerParameter(PARAMETER_C, "Tap 1 distance (inches)");
+  registerParameter(PARAMETER_D, "Tap 1 level (dB)");
+  registerParameter(PARAMETER_E, "Tap 2 distance (inches)");
+
     float s_rate = getSampleRate();
 
 			unsigned int mbs = BASE_BUFFER * s_rate;
@@ -68,9 +85,14 @@ public:
   void processAudio(AudioBuffer& _buf){
     uint32_t sample_count = _buf.getSize();
     float s_rate = getSampleRate();
-    input = _buf.getSamples(LEFT_CHANNEL);
-    output = input;
-    TapeDelayPatch* plugin_data = this;    
+  speed = getParameterValue(PARAMETER_A)*10 - 0;
+  da_db = getParameterValue(PARAMETER_B)*90 - -90;
+  t1d = getParameterValue(PARAMETER_C)*4 - 0;
+  t1a_db = getParameterValue(PARAMETER_D)*90 - -90;
+  t2d = getParameterValue(PARAMETER_E)*4 - 0;
+  input = _buf.getSamples(0);
+  output = _buf.getSamples(0);
+TapeDelayPatch* plugin_data = this;    
 
 unsigned int pos;
 float increment = f_clamp(speed, 0.0f, 40.0f);

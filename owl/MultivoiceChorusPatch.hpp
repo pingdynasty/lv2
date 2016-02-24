@@ -1,13 +1,14 @@
 
-#include "ladspa-util.h"
-#define MAX_LAWS 7
-    
 #include "StompBox.h"
 
 typedef float LADSPA_Data;
 inline int isnan(float x){
   return std::isnan(x);
 }
+  
+#include "ladspa-util.h"
+#define MAX_LAWS 7
+    
 
 /**
   MultivoiceChorus
@@ -18,11 +19,17 @@ This is an implementation of a Multivoice (as opposed to Multiscale) chorus algo
 */
 class MultivoiceChorusPatch : public Patch {
 private:
+
   float voices;
+
   float delay_base;
+
   float voice_spread;
+
   float detune;
+
   float law_freq;
+
   float attendb;
   float* input;
   float* output;
@@ -45,6 +52,12 @@ private:
 
 public:
   MultivoiceChorusPatch(){
+  registerParameter(PARAMETER_A, "Number of voices");
+  registerParameter(PARAMETER_B, "Delay base (ms)");
+  registerParameter(PARAMETER_C, "Voice separation (ms)");
+  registerParameter(PARAMETER_D, "Detune (%)");
+  registerParameter(PARAMETER_E, "LFO frequency (Hz)");
+
     float s_rate = getSampleRate();
 
 int min_size;
@@ -76,9 +89,14 @@ count = 0;
   void processAudio(AudioBuffer& _buf){
     uint32_t sample_count = _buf.getSize();
     float s_rate = getSampleRate();
-    input = _buf.getSamples(LEFT_CHANNEL);
-    output = input;
-    MultivoiceChorusPatch* plugin_data = this;    
+  voices = getParameterValue(PARAMETER_A)*7 - 1;
+  delay_base = getParameterValue(PARAMETER_B)*30 - 10;
+  voice_spread = getParameterValue(PARAMETER_C)*2 - 0;
+  detune = getParameterValue(PARAMETER_D)*5 - 0;
+  law_freq = getParameterValue(PARAMETER_E)*28 - 2;
+  input = _buf.getSamples(0);
+  output = _buf.getSamples(0);
+MultivoiceChorusPatch* plugin_data = this;    
 
 unsigned long pos;
 int d_base, t;
